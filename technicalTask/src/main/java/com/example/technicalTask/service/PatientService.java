@@ -4,16 +4,16 @@ import com.example.technicalTask.entity.PatientEntity;
 import com.example.technicalTask.exception.PatientAlreadyExistException;
 import com.example.technicalTask.exception.PatientNotFoundException;
 import com.example.technicalTask.repository.PatientRepo;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Updates;
 import lombok.AllArgsConstructor;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import static com.mongodb.client.model.Updates.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +23,12 @@ import java.util.Optional;
 public class PatientService {
 
     private final PatientRepo patientRepo;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private MongoOperations mongoOperations;
     public List<PatientEntity> getAllPatient(){
         return patientRepo.findAll();
     }
@@ -52,14 +58,19 @@ public class PatientService {
 
 
     public Optional<PatientEntity> upDate(PatientEntity newpatient){
-        Optional<PatientEntity> patient = patientRepo.findById(newpatient.getId());
+
         Query query =new Query();
-        query.addCriteria(Criteria.where("_id").is(newpatient.getId()));
+        query.addCriteria(Criteria.where("id").is(newpatient.getId()));
 
         Update update = new Update();
-        update.set("firstName",newpatient.getFirstName());
+        update.set("age",newpatient.getAge());
 
+        PatientEntity newPatient = mongoOperations.findAndModify(
+                query,update,
+                new FindAndModifyOptions().returnNew(true), PatientEntity.class
+        );
+        System.out.println(newpatient);
 
-        return patient;
+        return Optional.of(newPatient);
     }
 }

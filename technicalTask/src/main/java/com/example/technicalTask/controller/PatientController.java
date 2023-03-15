@@ -5,6 +5,8 @@ import com.example.technicalTask.exception.PatientAlreadyExistException;
 import com.example.technicalTask.exception.PatientNotFoundException;
 import com.example.technicalTask.service.PatientService;
 import lombok.AllArgsConstructor;
+import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +20,19 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping("/all")
-    public List<PatientEntity> fetchAllPatients(){
-        return patientService.getAllPatient();
+    public ResponseEntity<List<PatientEntity>> fetchAllPatients(){
+        try{
+            return new ResponseEntity<List<PatientEntity>>(patientService.getAllPatient(), HttpStatus.OK);
+//            return ResponseEntity.ok(patientService.getAllPatient());
+        }catch (Exception exception){
+            return new ResponseEntity<List<PatientEntity>>( HttpStatus.BAD_REQUEST );
+//            return ResponseEntity.badRequest().body("Виникла помилка");
+        }
+
     };
 
     @PostMapping("/")
-    public ResponseEntity<String> addPatient(@RequestBody PatientEntity patient)
-    {
+    public ResponseEntity<String> addPatient(@RequestBody PatientEntity patient){
         try{
             patientService.addPatient(patient);
             return ResponseEntity.ok("Пацієнта додано");
@@ -61,7 +69,7 @@ public class PatientController {
     public ResponseEntity updatePatient(@RequestBody PatientEntity newpatient){
         try {
             patientService.upDate(newpatient);
-            return ResponseEntity.ok("updateted");
+            return ResponseEntity.ok(patientService.upDate(newpatient));
         }catch (Exception e){
             return ResponseEntity.badRequest().body("щось не так");
         }
