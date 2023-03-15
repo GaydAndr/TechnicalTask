@@ -1,6 +1,8 @@
 package com.example.technicalTask.controller;
 
 import com.example.technicalTask.entity.PatientEntity;
+import com.example.technicalTask.exception.PatientAlreadyExistException;
+import com.example.technicalTask.exception.PatientNotFoundException;
 import com.example.technicalTask.service.PatientService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,22 +22,30 @@ public class PatientController {
         return patientService.getAllPatient();
     };
 
+    @PostMapping("/")
+    public ResponseEntity<String> addPatient(@RequestBody PatientEntity patient)
+    {
+        try{
+            patientService.addPatient(patient);
+            return ResponseEntity.ok("Пацієнта додано");
+        } catch (PatientAlreadyExistException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }catch (Exception exception){
+            return ResponseEntity.badRequest().body("Виникла помилка");
+        }
+    }
+
     @GetMapping("/id")
     public ResponseEntity<String> getOnePatient(@RequestBody PatientEntity patientid){
         try {
             patientService.getOne(patientid.getId());
             return ResponseEntity.ok("додано");
-//        } catch (UserAlreadyExistException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
+        }catch (PatientNotFoundException exception){
+            return ResponseEntity.badRequest().body(exception.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
 
-    }
-
-    @PostMapping("/")
-    public PatientEntity addPatient(@RequestBody PatientEntity patient){
-        return patientService.addPatient(patient);
     }
 
     @DeleteMapping("/{id}")
@@ -47,26 +57,14 @@ public class PatientController {
         }
     }
 
-//    @PatchMapping("/update")
-//    public Optional<PatientEntity> updatePatient(@RequestBody PatientEntity patient){
-//        return patientService.upDate(patient.getId());
-//    }
+    @PatchMapping("/update")
+    public ResponseEntity updatePatient(@RequestBody PatientEntity newpatient){
+        try {
+            patientService.upDate(newpatient);
+            return ResponseEntity.ok("updateted");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("щось не так");
+        }
+    }
 
-//    @PatchMapping
-//    public ResponseEntity registration(@RequestBody PatientEntity patient){
-//        try{
-//            return ResponseEntity.ok("Працює(навіть)");
-//        }catch (Exception e){
-//            return ResponseEntity.badRequest().body("Виникла помилка");
-//        }
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity getPatients(){
-//        try{
-//            return ResponseEntity.ok("Працює(навіть)");
-//        }catch (Exception e){
-//            return ResponseEntity.badRequest().body("Виникла помилка");
-//        }
-//    }
 }
