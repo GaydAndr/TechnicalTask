@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class Comments {
-    private LocalDateTime localDateTime;
+    private String localDateTime;
     private String text;
 }

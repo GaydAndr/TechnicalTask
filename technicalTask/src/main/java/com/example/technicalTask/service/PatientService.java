@@ -1,5 +1,6 @@
 package com.example.technicalTask.service;
 
+import com.example.technicalTask.entity.Comments;
 import com.example.technicalTask.entity.PatientEntity;
 import com.example.technicalTask.exception.PatientAlreadyExistException;
 import com.example.technicalTask.exception.PatientNotFoundException;
@@ -39,6 +40,7 @@ public class PatientService {
 			}
             patientRepo.insert(patient);
 //            patientRepo.save(patient);
+        System.out.println(patient);
         return patient;
     }
 
@@ -57,19 +59,40 @@ public class PatientService {
 
 
 
-    public Optional<PatientEntity> upDate(PatientEntity newpatient){
+    public Optional<PatientEntity> upDate(PatientEntity newData) throws PatientNotFoundException{
+        PatientEntity patient = patientRepo.findById(newData.getId()).get();
+        if (patient==null){
+            throw new PatientNotFoundException("Пацієнта не знайдено");
+        }
 
         Query query =new Query();
-        query.addCriteria(Criteria.where("id").is(newpatient.getId()));
+        query.addCriteria(Criteria.where("id").is(newData.getId()));
 
         Update update = new Update();
-        update.set("age",newpatient.getAge());
+        update.set("age",newData.getAge());
 
         PatientEntity newPatient = mongoOperations.findAndModify(
                 query,update,
                 new FindAndModifyOptions().returnNew(true), PatientEntity.class
         );
-        System.out.println(newpatient);
+//        System.out.println( newPatient.getComments();
+
+        return Optional.of(newPatient);
+    }
+
+    public Optional<PatientEntity> addComment(PatientEntity newComment){
+
+        Query query =new Query();
+        query.addCriteria(Criteria.where("id").is(newComment.getId()));
+
+        Update update = new Update();
+        update.push("comments",newComment.getComments());
+
+        PatientEntity newPatient = mongoOperations.findAndModify(
+                query,update,
+                new FindAndModifyOptions().returnNew(true), PatientEntity.class
+        );
+//        System.out.println(newComment.getComments());
 
         return Optional.of(newPatient);
     }
