@@ -1,19 +1,14 @@
 package com.example.technicalTask.service;
 
-import com.example.technicalTask.entity.Comments;
 import com.example.technicalTask.entity.PatientEntity;
 import com.example.technicalTask.exception.PatientAlreadyExistException;
 import com.example.technicalTask.exception.PatientNotFoundException;
 import com.example.technicalTask.repository.PatientRepo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +25,10 @@ public class PatientService {
 
     @Autowired
     private MongoOperations mongoOperations;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     public List<PatientEntity> getAllPatient(){
         return patientRepo.findAll();
     }
@@ -38,10 +37,10 @@ public class PatientService {
        if(patientRepo.findPatientEntityByEmail(patient.getEmail()).isPresent()){
             throw new PatientAlreadyExistException("Пацієнт з таким E-mail вже існує");
 			}
-            patientRepo.insert(patient);
-//            patientRepo.save(patient);
-        System.out.println(patient);
-        return patient;
+        PatientEntity newpatient = patientRepo.insert(patient);
+
+        System.out.println(newpatient);
+        return newpatient;
     }
 
     public Optional<PatientEntity> getOne(String id) throws PatientNotFoundException{
@@ -59,41 +58,46 @@ public class PatientService {
 
 
 
-    public Optional<PatientEntity> upDate(PatientEntity newData) throws PatientNotFoundException{
-        PatientEntity patient = patientRepo.findById(newData.getId()).get();
-        if (patient==null){
-            throw new PatientNotFoundException("Пацієнта не знайдено");
-        }
-
-        Query query =new Query();
-        query.addCriteria(Criteria.where("id").is(newData.getId()));
-
-        Update update = new Update();
-        update.set("age",newData.getAge());
-
-        PatientEntity newPatient = mongoOperations.findAndModify(
-                query,update,
-                new FindAndModifyOptions().returnNew(true), PatientEntity.class
-        );
-//        System.out.println( newPatient.getComments();
-
-        return Optional.of(newPatient);
+    public Object upDate(Object newData) throws PatientNotFoundException{
+        PatientEntity patient = new PatientEntity();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.convertValue(newData, PatientEntity.class);
+        System.out.println(mapper);
+//        patient = patientRepo.findById(newData);
+//        if (patient==null){
+//            throw new PatientNotFoundException("Пацієнта не знайдено");
+//        }
+//
+//        Query query =new Query();
+//        query.addCriteria(Criteria.where("id").is(newData.));
+//
+//        Update update = new Update();
+//        update.set("age",newData.age);
+//
+//        PatientEntity newPatient = mongoOperations.findAndModify(
+//                query,update,
+//                new FindAndModifyOptions().returnNew(true), PatientEntity.class
+//        );
+////        System.out.println( newPatient.getComments();
+//
+//        return Optional.of(newPatient);
+        return newData;
     }
 
-    public Optional<PatientEntity> addComment(PatientEntity newComment){
+    public String addComment(String newComment){
 
-        Query query =new Query();
-        query.addCriteria(Criteria.where("id").is(newComment.getId()));
-
-        Update update = new Update();
-        update.push("comments",newComment.getComments());
-
-        PatientEntity newPatient = mongoOperations.findAndModify(
-                query,update,
-                new FindAndModifyOptions().returnNew(true), PatientEntity.class
-        );
+//        Query query =new Query();
+//        query.addCriteria(Criteria.where("id").is(newComment.getId()));
+//
+//        Update update = new Update();
+//        update.push("comments",newComment.getComments());
+//
+//        PatientEntity newPatient = mongoOperations.findAndModify(
+//                query,update,
+//                new FindAndModifyOptions().returnNew(true), PatientEntity.class
+//        );
 //        System.out.println(newComment.getComments());
 
-        return Optional.of(newPatient);
+        return newComment;
     }
 }

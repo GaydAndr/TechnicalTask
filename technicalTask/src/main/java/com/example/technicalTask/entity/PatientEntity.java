@@ -21,10 +21,12 @@ public class PatientEntity {
     private String lastName;
     @Indexed(unique = true)
     private String email;
+
+    private String birthday;
     private String age;
     private Gender gender;
     private Address address;
-    private List<Comments> comments;
+    private List<String> comments;
 
 
 //    public PatientEntity(String firstName,

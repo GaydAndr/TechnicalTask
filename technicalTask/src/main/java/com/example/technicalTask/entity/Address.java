@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class Address {
     private String country;
-    private String state;
+    private String region;
     private String address;
 
 }

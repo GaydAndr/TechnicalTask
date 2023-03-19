@@ -15,7 +15,7 @@ public class PatientController {
 
     private final PatientService patientService;
 
-    @GetMapping("/all")
+    @GetMapping("/getall")
     public ResponseEntity fetchAllPatients(){
         try{
 //            return new ResponseEntity<List<PatientEntity>>(patientService.getAllPatient(), HttpStatus.OK);
@@ -27,11 +27,11 @@ public class PatientController {
 
     };
 
-    @PostMapping("/")
-    public ResponseEntity<String> addPatient(@RequestBody PatientEntity patient){
+    @PostMapping("/add-patient")
+    public ResponseEntity addPatient(@RequestBody PatientEntity patient){
         try{
-            patientService.addPatient(patient);
-            return ResponseEntity.ok("Пацієнта додано");
+//            patientService.addPatient(patient);
+            return ResponseEntity.ok(patientService.addPatient(patient));
         } catch (PatientAlreadyExistException exception) {
             return ResponseEntity.badRequest().body(exception.getMessage());
         }catch (Exception exception){
@@ -62,7 +62,7 @@ public class PatientController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity updatePatient(@RequestBody PatientEntity newpatient){
+    public ResponseEntity updatePatient(@RequestBody Object newpatient){
         try {
             patientService.upDate(newpatient);
             return ResponseEntity.ok(patientService.upDate(newpatient));
@@ -73,8 +73,8 @@ public class PatientController {
         }
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity addCommentForPatient(@RequestBody PatientEntity newpatient){
+    @PatchMapping("/add-comment")
+    public ResponseEntity addCommentForPatient(@RequestBody String newpatient){
         try {
             patientService.addComment(newpatient);
             return ResponseEntity.ok(patientService.addComment(newpatient));
