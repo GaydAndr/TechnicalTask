@@ -25,7 +25,7 @@ public class PatientEntity {
     private String birthday;
     private String age;
     private Gender gender;
-    private Address address;
+    private Address fullAddress;
     private List<String> comments;
 
 
