@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/TechnicalTask.iml" filepath="$PROJECT_DIR$/.idea/TechnicalTask.iml" />
-      <module fileurl="file://$PROJECT_DIR$/technicalTask/technicalTask.iml" filepath="$PROJECT_DIR$/technicalTask/technicalTask.iml" />
+      <module fileurl="file://$PROJECT_DIR$/technicalTask.iml" filepath="$PROJECT_DIR$/technicalTask.iml" />
     </modules>
   </component>
 </project>
